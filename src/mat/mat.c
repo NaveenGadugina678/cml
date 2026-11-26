@@ -1,24 +1,69 @@
 #include "mat.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
 
-void mat_func(Mat m, float f(void)) {
-    for (size_t i = 0 ; i < m.rows * m.cols ; i++) {
-        m.data[i] = f();
+void mat_set(Mat dst, float val) {
+    for (size_t i = 0 ; i < dst.rows * dst.cols ; i++) {
+        dst.data[i] = val;
     }
 }
 
-void mat_mul(Mat c, Mat a, Mat b) {
-    memset(c.data, 0, c.rows * c.cols * sizeof(*c.data));
+void mat_cpy(Mat dst, Mat src) {
+    assert(dst.rows >= src.rows);
+    assert(dst.cols >= src.cols);
+
+    for (size_t i = 0 ; i < src.rows ; ++i) {
+        for (size_t j = 0 ; j < src.cols ; ++j) {
+            dst.data[i * dst.cols + j] = src.data[i * src.cols + j];
+        }
+    }
+}
+
+void mat_gen(Mat dst, float f(void)) {
+    for (size_t i = 0 ; i < dst.rows * dst.cols ; i++) {
+        dst.data[i] = f();
+    }
+}
+
+void mat_fun(Mat dst, Mat src, float f(float)) {
+    assert(dst.rows >= src.rows);
+    assert(dst.cols >= src.cols);
+
+    for (size_t i = 0 ; i < src.rows ; ++i) {
+        for (size_t j = 0 ; j < src.cols ; ++j) {
+            dst.data[i * dst.cols + j] = f(src.data[i * src.cols + j]);
+        }
+    } 
+}
+
+void mat_mul(Mat dst, Mat a, Mat b) {
+    memset(dst.data, 0, dst.rows * dst.cols * sizeof(*dst.data));
 
     for (size_t i = 0 ; i < a.rows ; i++) {
         for (size_t k = 0 ; k < a.cols ; k++) {
             for (size_t j = 0 ; j < b.cols ; j++) {
-                c.data[i * c.cols + j] += a.data[i * a.cols + k] * b.data[k * b.rows + j];
+                dst.data[i * dst.cols + j] += a.data[i * a.cols + k] * b.data[k * b.cols + j];
             }
         }
     }
+}
+
+void mat_mse(float* mse, Mat y_hat, Mat y) {
+    assert(y_hat.rows == y.rows);
+    assert(y_hat.cols == y.cols);
+
+    float se = 0.0f;
+
+    for(size_t i = 0 ; i < y.rows ; ++i) {
+        for (size_t j = 0 ; j < y.cols ; ++j) {
+            float diff = (y_hat.data[i * y.cols + j] - y.data[i * y.cols + j]);
+            se +=  diff * diff;
+        }
+    }
+
+    *mse = se / (float)(y.rows * y.cols);
 }
 
 void mat_print(Mat m) {

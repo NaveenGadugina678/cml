@@ -10,7 +10,7 @@ void test_mat_fun_ones(void) {
         1, 1,
     }};
 
-    mat_func(a, one);
+    mat_gen(a, one);
 
     assert(mat_eq(a, exp));
 }
