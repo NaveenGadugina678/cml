@@ -40,7 +40,7 @@ int main() {
     
     printf("mat mul time : %.5f s\n", dur_s);
 
-    free(mat_data); // freeing at the actually doesn't make any sense since we are closing the program.
+    free(mat_data); // freeing at the end actually doesn't make any sense since we are closing the program.
 
     return 0;
 }

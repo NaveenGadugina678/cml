@@ -5,3 +5,8 @@ obj
 bin
 
 Makefile
+
+compile_flags.txt
+
+octave-workspace
+
